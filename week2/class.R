@@ -30,4 +30,27 @@ wilcox.test((model$residuals)^2) # H0: E_e = 0 vs H1: E_e != 0
 # Bt 1: H0: a = 0 vs H1: a != 0
 # Bt 2: H0: b = 0 vs H1: b != 0
 
-summary(model)
+wilcox.test(model$residuals) # nếu e ko chuẩn
+
+# H0: EX = 0 vs H1: EX != 0
+lstat = Boston$lstat
+medv = Boston$medv
+model = lm(medv ~ lstat)
+confint(model) #KTC 95% cho các hệ số trong mô hình hồi quy
+confint(model, level = 0.99)
+
+predict(model, data.frame (lstat=(c(5, 10, 15))), interval = "confidence") # đưa ra gtri dự đoán
+
+# dev.off()
+plot(lstat, medv)
+abline(model)
+abline(model, lwd=3, col="red")
+model$coefficients
+abline(model, lwd=3)
+abline(model, lwd=3, col="red")
+plot(lstat, medv, col="red")
+plot(lstat, medv, pch= ".")
+plot(1:20, 1:20, pch=1:20)
+
+par(mfrow = c(2,2))
+plot(model)
