@@ -1,0 +1,122 @@
+---
+title : "PTTKNC BT4"
+author : "PhamHoangHai_20000548"
+date : 2024-03-14
+output : html_document
+---
+
+
+# Bài tập 1
+
+### a.
+
+```{r}
+rm(list = ls())
+library(mvtnorm)
+
+set.seed(100)
+
+samp = rmvnorm(n = 100, mean = c(0, 0, 1), sigma = matrix(c(1, .8, .6, .8, 1, .8, .6, .8, 1), nrow = 3, ncol = 3, byrow = TRUE))
+
+colnames(samp) = c("A", "B", "C")
+
+D = rnorm(n = 100, mean = 0.5, sd = 0.5)
+samp = cbind(samp, D)
+
+```
+
+### b.
+
+Giá trị trung bình mẫu:
+```{r}
+colMeans(samp)
+```
+
+Ma trận hiệp phương sai mẫu:
+```{r}
+cov(samp)
+```
+
+Ma trận tương quan mẫu:
+```{r}
+cor(samp)
+```
+
+### c.
+
+Biểu đồ tán sắc
+
+```{r}
+plot(~A + B + C + D, data=samp)
+```
+Biểu đồ nhiệt:
+```{r}
+heatmap(samp, Colv = NA, Rowv = NA, scale = "column")
+```
+
+Kiểm tra tính chuẩn 4-chiều:
+```{r}
+library(mvnormtest)
+
+mshapiro.test(t(samp))
+```
+
+# Bài 2
+
+### a.
+
+```{r}
+library(ISLR)
+
+#data = cbind(Smarket$Lag1, Smarket$Lag2, Smarket$Lag3, Smarket$Lag4, Smarket$Lag5, Smarket$Today)
+
+df = data.frame(Smarket$Lag1, Smarket$Lag2, Smarket$Lag3, Smarket$Lag4, Smarket$Lag5, Smarket$Today)
+
+colnames(df) = c("Lag1", "Lag2", "Lag3", "Lag4", "Lag5", "Today")
+```
+
+Giá trị trung bình mẫu:
+```{r}
+colMeans(df)
+```
+
+Ma trận tương quan mẫu:
+```{r}
+cov(df)
+```
+Ma trận hiệp phương sai mẫu:
+```{r}
+cor(df)
+```
+### b.
+
+Biểu đồ phân tán các biến:
+
+```{r}
+plot(~Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Today, data = df)
+```
+
+Biểu đồ nhiệt của ma trận tương quan:
+```{r}
+heatmap(x = as.matrix(df), Colv = NA, Rowv = NA, scale = "column")
+```
+
+### c.
+```{r}
+library(mvnormtest)
+
+mshapiro.test(t(as.matrix(df)))
+```
+Kiểm tra sự khác biệt giữa lợi nhuận trung bình một ngày trước và ba ngày trước:
+```{r}
+library(mvtnorm)
+
+t.test(df$Lag1, df$Lag3)
+```
+### e.
+```{r}
+library(ICSNP)
+
+HotellingsT2(df, mu = c(0, 0, 0, 0, 0, 0))
+```
+
