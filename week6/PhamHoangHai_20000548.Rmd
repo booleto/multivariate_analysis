@@ -1,0 +1,120 @@
+---
+title : "PTTKNC BT5"
+author : "PhamHoangHai_20000548"
+date : 2024-03-21
+output : html_document
+---
+
+# Bài tập tuần 6
+
+## Bài tập 8.1
+
+### b.
+
+Nhập dữ liệu:
+```{r}
+invest = read.table("./investment.txt", sep = " ", header = TRUE)
+mat = invest[2:9]
+
+```
+
+Căn bậc 2 các giá trị riêng của ma trận tương quan:
+
+```{r}
+sqrt(eigen(cor(mat))$values)
+```
+Phương sai của các thành phần chính:
+
+```{r}
+pcacor = princomp(mat, cor = TRUE)
+pcacor
+```
+Kết luận: Phương sai của các thành phần chính chính là các giá trị riêng của ma trận tương quan
+
+
+## Bài 8.2
+
+### a. và b.
+
+```{r}
+library(datasets)
+
+m = 4
+
+factanal(factors = m, covmat = Harman23.cor)
+```
+### c.
+
+Khi cor = TRUE
+```{r}
+princomp(x = Harman23.cor$cov, cor = TRUE)
+```
+Khi cor = FALSE
+```{r}
+princomp(x = Harman23.cor$cov, cor = FALSE)
+```
+Kết luận: Kết quả của PCA có khác đi khi sử dụng cor = TRUE
+
+## Bài 8.5
+
+### a.
+
+```{r}
+library(datasets)
+
+pairs(x = USJudgeRatings)
+
+```
+Kết luận: Có nhiều biến có sự tương quan mạnh
+
+### b.
+
+```{r}
+princomp(USJudgeRatings, cor = TRUE)
+```
+
+```{r}
+factanal(factors = 5, x = USJudgeRatings)
+```
+
+## Bài 8.6
+
+### a.
+
+```{r}
+library(datasets)
+
+factanal(factors = 2, covmat=ability.cov)
+```
+### b.
+
+```{r}
+library(datasets)
+
+summary(pc <- princomp(ability.cov$cov))
+pc$loadings
+```
+### d.
+```{r}
+ability.cor <- cov2cor(ability.cov$cov)
+princomp(ability.cor)
+princomp(ability.cor)$loadings
+```
+
+## Bài 8.9
+
+### a.
+
+```{r}
+library(datasets)
+
+pairs(trees)
+```
+Nhận xét: Có sự tương quan giữa biến Girth và Volume
+
+### b.
+
+```{r}
+princomp(trees)
+
+```
