@@ -1,0 +1,147 @@
+# CHƯƠNG 9
+
+## 1. Hồi quy tuyến tính đơn biến
+
+```{r}
+library(datasets)
+univ = lm(formula = mpg ~ cyl + wt + am + carb, data = mtcars)
+fit = univ$fitted.values # y_h: các giá trị mpg được tính theo mô hình
+red = univ$residuals # phần dư: y - y_h = mpg_thực tế - mpg_mô hình
+summary(univ)
+```
+### 1. Giải thích kết quả thu được
+Xây dựng mô hình hồi quy tuyến tính của các biến mpg theo các biến cyl, am, carb trong bộ dữ liệu mtcars.
+Phần dư:
+```
+    Min      1Q  Median      3Q     Max 
+-4.5451 -1.2184 -0.3739  1.4699  5.3528
+```
+Các hệ số trong mô hình hồi quy: ước lượng, sai số chuẩn, test thống kê T (t value) và p-value (Pr(>|t|)) cho bài toán kiểm định hệ số
+
+Sai số phần dư = 2.5
+
+Hệ số xác định: R^2 = 0.8502, R^2 hiệu chỉnh: 0.828
+82.8% sự biến thiên của mpg có thể được giải thích bởi các biến cyl, am và carb.
+
+Test thống kê F = 38.3 với (4.27) bậc tự do và pvalue = 9.255e-11 để kiểm định bài toán: H0: Mô hình nói chúng không có ý nghĩa thống kê vs H1: Mô hình nói chung có ý nghĩa thống kê
+
+Do pvalue=9.255e-11 < 0.05 nên
+
+### 2. Đưa ra phương trình hồi quy của mpg theo các biến
+```
+mpg = 36.8503 - 1.1968*cyl - 2.4785*wt + 1.7801*am - 0.7480*carb
+```
+
+### 3. Các hệ số trong mô hình có thực sự khác 0 ko?
+
+```{r}
+p_values = summary(univ)$coefficients[, "Pr(>|t|)"]
+significant = p_values<0.05
+significant
+```
+TRUE nếu hệ số có ý nghĩa thống kê (khác 0)
+FALSE nếu hệ số không có ý nghĩa thống kê (bằng 0)
+
+Xét 5 bài toán kiểm định hệ số trong mô hình hồi quy mpg
+```
+mpg = a_0 + a_1*cyl + a2*wt + a3*am + a4*carb
+```
+H0: a_i = 0 vs H1: a_i != 0 (i = 0, 1, 2, 3,...)
+Ta thấy với hệ số a0, a1 của biến cyl và wt, các giá trị pvalue đều nhỏ hơn 0.05. Do đó ta chấp nhận H0. Hay có thể nói, am và carb có ý nghĩa trong mô hình
+
+
+### 4. Phần dư có phân phối chuẩn với gttb bằng 0 ko? Phần dư có tương quan ko?
+
+```{r}
+library(lmtest)
+#durbinWatsonTest(univ)
+
+#predict() dùng để đưa ra dự đoán ở ý 5
+dwtest(univ)
+
+shapiro.test(univ$residuals)
+```
+H0: Phần dư có phân phối chuẩn
+H1: Phần dư không có phân phối chuẩn
+Do p-value = 0.7379 > 0.05 nên không có cơ sở bác bỏ H0 hay nói cách khác là phần dư tuân theo phân phối chuẩn
+
+```{r}
+t.test(univ$residuals)
+```
+H0: GTTB = 0
+H1: GTTB != 0
+Do pvalue = 1 > 0.05 nên chấp nhận H0 hay nói cách khác là GTTB = 0
+
+```{r}
+dwtest(univ)
+```
+H0: Phần dư không có tương quan
+H1: Phần dư có tương quan
+
+Do pvalue = 0.1252 > 0.05 nên bác bỏ H0 hay nói cách khác phần dư có tương quan
+
+
+5. Đưa ra dự đoán để chỉ số mpg của xe có cyl = 2, wt = 3, am = 5 và carb = 8
+
+```{r}
+data = data.frame(cyl = 1:2, wt = 2:3, am = c(5,8), carb=c(4,8))
+predict(univ, newdata = data)
+```
+```{r}
+univ$coefficients %*% c(1, 2, 3, 5, 8)
+```
+Mô hình hồi quy tuyến tính: `mpg = 36.8503 - 1.1968*cyl - 2.4785*wt + 1.7801*am - 0.7480*carb`
+
+```{r}
+lm(mpg ~ 0 + wt + cyl, data = mtcars)
+```
+```{r}
+names(mtcars)
+```
+### Biểu diễn mpg theo một số biến trong dữ liệu mtcars
+Liệu mô hình biểu diễn mpg theo bao nhiêu biến là phù hợp nhất, đó là những biến nào?
+
+Phụ thuộc vòa tiêu chuẩn được lựa chọn, thì sẽ tìm được mô hình phù hợp tương ứng.
+
+Giới thiệu về việc tìm mô hình phù hợp theo tiêu chuẩn của AIC
+Hướng lựa chọn: forward, backward, both
+
+```{r}
+only = lm(mpg ~ 1, data = mtcars)
+all = lm(mpg ~ ., data = mtcars)
+fw = step(only, formula(all), direction = "forward", trace = 0)
+fw$anova
+```
+Ban đầu, mình nhận xét mô hình only, thu được 10 mô hình 1 biến có dạng `mpg = a0 + a1*x1`. Chọn mô hình có AIC nhỏ nhất trong 10 mô hình đó. Thu được mô hình one: `mpg = a0 + a1*wt`
+
+Thêm 1 trong 9 biến còn lại vào mô hình one, thu được 9 mô hình 2 biến có dạng: `mpg = a0 + a1*x1 + a2*x2`. Chọn mô hình có AIC nhỏ nhất trong 9 mô hình đó. Thu được mô hình two: `mpg = a0 + a1*wt + a2*cyl`
+
+Thực hiện cho đến khi giá trị AIC không bé đi nữa.
+
+```{r}
+summary(fw)
+```
+```{r}
+bw = step(all, formula(all), direction = "backward", trace = 0)
+bw$anova
+```
+```{r}
+bw = step(all, formula(all), direction = "both", trace = 0)
+bw$anova
+```
+```{r}
+bw = step(only, formula(all), direction = "both", trace = 0)
+bw$anova
+```
+```{r}
+three = lm(mpg ~ cyl + disp + wt, data = mtcars)
+both = step(three, formula(all), direction = "both", trace = 0)
+both$anova
+```
+```{r}
+summary(both)
+```
+### 1. Sinh mẫu nn 1 chiều, nhiều chiều: KĐ 1 mẫu, 2 mẫu 1 chiều, mẫu nhiều chiều
+### 2. HQTT đơn, bội, AIC
+### 3. Ktra tính chuẩn nhiều chiều
+### 4. Phân tích thành phần chính, phân tích NT
