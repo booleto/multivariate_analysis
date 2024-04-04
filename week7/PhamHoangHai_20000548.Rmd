@@ -1,0 +1,111 @@
+---
+title : "PTTKNC BT5"
+author : "PhamHoangHai_20000548"
+date : 2024-04-04
+output : html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Bài tập tuần 7
+
+## Bài tập 1
+
+### a.
+
+Mô hình hồi quy tuyến tính cho biến medv dựa vào các biến còn lại:
+
+```{r}
+library(MASS)
+
+#linreg = lm(formula = medv ~ crim + zn + indus + chas + nox + rm + age + dis + rad + tax + ptratio + black + lstat, data = Boston)
+
+linreg = lm(formula = medv ~ ., data = Boston)
+
+fit = linreg$fitted.values
+red = linreg$residuals
+summary(linreg)
+```
+
+Ước lượng hệ số:
+
+```{r}
+summary(linreg)$coefficients[, "Estimate"]
+```
+
+Kiểm định xem các hệ số trong mô hình có thực sự khác 0 không:
+
+```{r}
+p_values = summary(linreg)$coefficients[, "Pr(>|t|)"]
+significant = p_values<0.05
+significant
+```
+
+Kết luận: các biến thật sự khác 0 trừ indus và age
+
+Phần dư có tuân theo phân phối chuẩn hay không:
+
+```{r}
+shapiro.test(linreg$residuals)
+```
+
+H0: Phần dư có phân phối chuẩn H1: Phần dư không có phân phối chuẩn Vì
+p-value = 2.2e-16 \< 0.05 nên đủ cơ sở bác bỏ H0 =\> Phần dư không có
+phân phối chuẩn
+
+### b.
+
+Mô hình forward:
+
+```{r}
+fw = step(linreg, formula(linreg), direction = "forward", trace = 0)
+fw$anova
+```
+
+Mô hình backward:
+
+```{r}
+bw = step(linreg, formula(linreg), direction = "backward", trace = 0)
+bw$anova
+```
+
+Mô hình both:
+
+```{r}
+both = step(linreg, formula(linreg), direction = "both", trace = 0)
+both$anova
+```
+
+### d.
+
+```{r}
+summary(bw)
+```
+
+```{r}
+p_values = summary(bw)$coefficients[, "Pr(>|t|)"]
+significant = p_values<0.05
+significant
+```
+
+Kết luận: Các hệ số trong mô hình có thực sự khác 0
+
+Phần dư có tuân theo phân bố chuẩn hay không:
+
+```{r}
+shapiro.test(bw$residuals)
+```
+
+H0: Phần dư có tuân theo phân phối chuẩn H1: Phần dư không tuân theo
+phân phối chuẩn Kết luận: Vì p-value \< 0.05 nên đủ cơ sở bác bỏ H0 =\>
+Phần dư không tuân theo phân phối chuẩn
+
+GTTB có bằng 0 không:
+
+```{r}
+t.test(bw$residuals)
+```
+
+H0: Phần dư có GTTB = 0 H1: Phần dư có GTTB != 0 Vì p-value = 1 \> 0.05
+nên chấp nhận H0, tức GTTB của phần dư = 0
