@@ -39,7 +39,7 @@ f$uniqueness
 
 # X_i = sum(l_ij * F_j) + psi
 # psi được gọi là nhiễu/sai số
-# f$loadings
+f$loadings
 
 # Ma trận tải trọng cho biết mỗi nhân tố chi phối những biến nào? Mỗi biến bị chi phối bởi những nhân tố nào?
 # Ma trận tải trọng giúp biểu diễn các biến theo các nhân tố

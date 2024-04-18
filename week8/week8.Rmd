@@ -1,0 +1,95 @@
+2. Hồi quy tuyến tính đa biến (>1 biến phản hồi) được thực hiện theo 2 bước.
+
+Bước 1: thực hiện các phép hồi quy tuyến tính đơn biến, riêng biệt cho từng biến phụ thuộc y và thu thập phần dư cho từng phép hồi quy này.
+Bước 2: thực hiện phân tích các thành phần chính hoặc nhân tố trên phần dư để xem liệu có thông tin bổ sung về các biến phụ thuộc hay không sau khi đã hiệu chỉnh tác động của các biến x
+Sử dụng các phương pháp đồ họa để kiểm tra các giả định của mô hình và kiểm tra phần dư để tìm các ngoại lệ và sự thiếu phù hợp
+
+```{r}
+univ.aov = aov(mpg ~ cyl + disp + am + carb, data=mtcars)
+summary(univ.aov)
+```
+
+Pr(>F): H0: hai biến Y và xi độc lập / ko có sự khác biệt về mpg giữa các quan sát có cyl khác nhau
+
+```{r}
+lmfit = (lm(aov(mpg ~ cyl + disp + am + carb, data = mtcars)))
+```
+
+1. Các biến X_i và mpg mối tương quan tt ntn? Mạnh hay yếu?
+
+Xét hệ số tương quan giữa các cặp biến (mpg, X_i)
+
+```{r}
+attach(mtcars)
+
+cor(mpg, cyl)
+```
+Hệ số tương quan r(mpg, cyl) = -0.85, nên có thể thấy mpg và cyl có tương quan chặt
+Xét tương tự với các cặp biến (mpg, X_i) khác
+
+2. Tìm ước lượng và KTC 90% cho các hệ số cho mô hình
+
+Ước lượng hệ số b_i trong mô hình: `mpg = b_0 + b_1*cyl + b_2*disp + b_3*am + b_4*carb`
+```{r}
+lmfit$coefficients
+```
+Đưa ra mô hình phù hợp
+
+Khoảng tin cậy 90% cho các hệ số b0, b1, b2, b3, b4
+```{r}
+confint(lmfit, level = 0.9)
+```
+
+3. Các biến có ý nghĩa thống kê tác động ntn đến mpg?
+
+```{r}
+summary(lmfit)$coefficients
+```
+Xác định các biến có ý nghĩa thống kê chính là xét bài toán kiểm định các hệ số trong mô hình
+
+H0: b_i = 0 vs H1: b_i != 0 (i=0,1,...,4)
+Nếu bác bỏ H0 thì biến X_i có ý nghĩa thống kê.
+
+Sau đó, xem xét việc tăng/giảm của các biến đó ảnh hưởng ntn đến biến mpg
+
+Do p-value tương ứng với b0, b3, b4 đều nhỏ hơn 0.05 nên bác bỏ H0 hay các hệ số đó khác 0. Tức là, biến am và carb có ý nghĩa thống kê
+
+Tương tự, ta xét các biến còn lại
+
+Khi am tăng thì mpg tăng và ngược lại
+
+
+4. Kiểm định phần dư
+
+```{r}
+shapiro.test(lmfit$residuals)
+```
+H0: Phần du tuân theo pp chuẩn vs H1: phần dư k tuân theo pp chuẩn
+
+Do pvalue > 0.05 nên không đủ cơ sở bác bỏ H0
+
+```{r}
+t.test(lmfit$residuals)
+```
+H0: E(re) == 0 vs H1: E(re) != 0
+
+
+5. Hệ số xác định bằng bao nhiêu? Nó thể hiện điều gì?
+```{r}
+summary(lmfit)
+```
+R2 hiệu chỉnh = 80.93%, tức là mô hình sẽ giải thích được 80.93% sự biến thiên của mpg
+
+6. Cho một bộ giá trị bất kỳ của X. Đưa ra dự đoán về giá trị mpg theo mô hình và khoảng dự đoán 90% tương ứng
+
+```{r}
+dt = data.frame(cyl = 4, disp = 400, am = 1, carb = 5)
+predict(lmfit, newdata = dt, type = "response")
+```
+```{r}
+predict(lmfit, newdata = dt, interval = "prediction")
+```
+Đưa ra dự đoán về giá trị mpg của 1 xe có cyl = 4, disp = 400, am = 1, carb = 5
+```{r}
+predict(lmfit, newdata = dt, interval = "prediction", level = 0.9)
+```
