@@ -26,13 +26,13 @@ Trung bình mẫu
 colMeans(data)
 ```
 
-Phương sai mẫu
+Ma trận hiệp phương sai mẫu
 
 ```
 cov(data)
 ```
 
-Ma trận hiệp phương sai mẫu
+Ma trận tương quan mẫu
 
 ```
 cor(data)
@@ -82,9 +82,9 @@ Kiểm tra xem GTTB của `data` có bằng `m` hay không, với độ tin cậ
 t.test(data, mu = m, conf.level = a)
 ```
 
-H0: GTTB = m
+- H0: GTTB = m
 
-H1: GTTB != m
+- H1: GTTB != m
 
 Nếu pvalue > 0.05 thì chấp nhận H0. GTTB = 0
 
@@ -131,5 +131,64 @@ Nếu pvalue > 0.05, bác bỏ H0. `data` có tương quan
 Nếu pvalue < 0.05, không đủ cơ sở để bác bỏ H0. `data` không tương quan
 
 
-### Phân tích thành phần chính
+### Phân tích thành phần chính (PCA)
 
+PCA bằng dữ liệu
+
+```
+pc = princomp(data)
+```
+
+PCA bằng ma trận hiệp phương sai khi các biến trong bộ dữ liệu có cùng thang đo
+
+```
+pc = princomp(covmat = cov(data))
+```
+
+Khi các biến trong bộ dữ liệu khác thang đo, dùng ma trận tương quan
+
+```
+pc = princomp(covmat = cor(data))
+```
+
+In kết quả:
+
+```
+summary(pc)
+```
+
+Vẽ biểu đồ tầm quan trọng của các thành phần chính: 
+
+```
+screeplot(x = pc, col = "red", pch = 16, type = "lines", cex = 2, lwd = 2, main = "")
+```
+
+Vẽ biểu đồ loadings của các thành phần chính:
+
+```
+# col là màu
+# cex là độ lớn cho quan sát và tên biến
+biplot(pc, col = c(2, 3), cex = c(.4, 1),
+       xlim = c(-.45, .45), # Độ rộng trục Ox
+       xlab = "First principal component", # Tên trục Ox
+       ylab = "Second principal component", # Tên trục Oy
+       main = "Biplot for investment allocations" # Tên biểu đồ
+)
+```
+
+
+### Phân tích nhân tố
+
+Phân tích nhân tố của data với số nhân tố m
+
+```
+factanal(data, factors = m)
+```
+
+Dùng ma trận hiệp phương sai/ma trận tương quan
+
+```
+factanal(factors = m, covmat = cor(data))
+```
+
+### Hồi quy tuyến tính
