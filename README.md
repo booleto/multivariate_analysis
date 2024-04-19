@@ -44,6 +44,12 @@ Tương quan giữa 2 biến
 cor(a, b)
 ```
 
+Tổng quan kết quả của một mô hình:
+
+```
+summary(model)
+```
+
 ### Sinh mẫu ngẫu nhiên
 
 Sinh ngẫu nhiên biến 2 chiều theo phân phối chuẩn
@@ -71,6 +77,14 @@ Nếu p-value > 0.05 => không có cơ sở bác bỏ H0. `data` tuân theo phâ
 
 Nếu p-value < 0.05 => bác bỏ H0. `data` không tuân theo phân phối chuẩn.
 
+Nếu kiểm tra phân phối chuẩn nhiều chiều, có thể dùng:
+
+```
+mshapiro.test(data)
+```
+
+**NOTE:** Có thể phải chuyển vị data để tránh lỗi: `mshapiro.test(t(data))`
+
 
 ### Kiểm tra giá trị trung bình
 
@@ -86,9 +100,9 @@ t.test(data, mu = m, conf.level = a)
 
 - H1: GTTB != m
 
-Nếu pvalue > 0.05 thì chấp nhận H0. GTTB = 0
+Nếu p-value > 0.05 thì chấp nhận H0. GTTB = 0
 
-Nếu pvalue < 0.05 thì bác bỏ H0. GTTB != 0
+Nếu p-value < 0.05 thì bác bỏ H0. GTTB != 0
 
 Nếu kiểm tra lớn hơn/nhỏ hơn, thêm tham số alternative: 
 
