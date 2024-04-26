@@ -1,0 +1,142 @@
+# Phân tích phân biệt
+
+```{r}
+library(HDclassif)
+data(wine)
+names(wine)
+```
+
+```{r}
+wines = wine
+
+barbera = subset(wines, class==1)
+barolo = subset(wines, class==2)
+grignolio = subset(wines, class==3)
+```
+
+Các giá trị trung bình mẫu:
+
+```{r}
+colMeans(barbera)
+```
+
+```{r}
+colMeans(barolo)
+```
+
+```{r}
+colMeans(grignolio)
+```
+
+```{r}
+winemeans = data.frame(colMeans(barbera), colMeans(barolo), colMeans(grignolio))
+colnames(winemeans) = c("Barbera", "Barolo", "Grignolio")
+winemeans[1,] = c(nrow(barbera), nrow(barolo), nrow(grignolio))
+rownames(winemeans)[1] = "sample size"
+winemeans
+```
+
+Hồi quy Logistic:
+```{r}
+require(nnet)
+
+wines$class = as.factor(wines$class) # tạo categories
+wines$rclass = relevel(wines$class, ref = 2)
+
+winelogit = multinom(rclass ~ V1 + V3 + V4 + V12 + V13, data=wines, maxit=200)
+```
+```{r}
+ws = summary(winelogit)
+print(ws, digits=4)
+```
+
+```{r}
+ws$fitted.values
+```
+
+## Linear Discriminant Analysis
+
+Sử dụng các biểu diễn tuyến tính để phân biệt các nhóm
+
+Giả sử X có pp chuẩn nhiều chiều, các nhóm có cùng phương sai
+
+Dùng các biến ban đầu trong mô hình hồi quy tuyến tính/biểu diễn LD1, LD2 theo các biến ban đầu, khi đó, thay vì k chiều, sẽ chỉ cần biểu diễn 2 chiều (mặt phẳng)
+
+```{r}
+library(MASS)
+
+wines = wine
+class = wine$class
+wines = cbind(class, wines[,-1])
+dim(wines)
+```
+Xác định sự kết hợp tuyến tính của các đặc trưng mô tả hai hoặc nhiều lớp/nhóm đối tượng hoặc sự kiện
+
+```{r}
+ld = lda(class ~ ., data=wines)
+ld
+```
+
+```{r}
+loading = as.matrix(wines[, 2 : 14]) %*% ld$scaling
+plot(loading, col=c(6,2,4)[wines[, 1]],
+      pch = 16, cex = 1.0,
+     xlab = "First linear discriminator (LD1)",
+     ylab = "Second linear discriminator (LD2)"
+     )
+```
+
+Nếu cho giá trị các biến của một rượu nào đó, ta có thể tính LD1 và LD2 tương ứng. Vẽ trên đồ thị và có thể đưa ra dự đoán rượu đó thuộc loại nào.
+
+```{r}
+for (i in )
+```
+
+## Regression Trees - Classification Trees - trực quan
+
+Cũng có thể xây dựng các quy tắc phân loại dựa trên cây phân cấp (hierarchical trees)
+
+```{r}
+library(rpart)
+
+names(wines)
+```
+```{r}
+tree = rpart(class ~ ., data = wines)
+best = tree$cptable[which.min(tree$cptable[, "xerror"]), "CP"]
+best
+```
+
+```{r}
+pruned_tree = prune(tree, cp=best)
+```
+
+Vẽ cây
+
+```{r}
+dev.off()
+
+library(rpart.plot)
+
+prp(pruned_tree,
+    faclen = 0, # dùng tên đầy đủ cho nhãn
+    extra = 1, # hiển thị số lượng quan sát cho mỗi nút
+    roundint = F, # không làm tròn thành số nguyên
+    digits = 5 # hiển thị tối đa 5 chữ số thập phân có ý nghĩa
+    )
+
+```
+
+Tìm bảng tần số về loại rượu trên các quan sát thỏa mãn Proline >= 755 và Flanvanoids >= 2.165.
+Một rượu thỏa mãn Proline < 755, Dilution < 2.115, Hue >= 0.9 thì xác suất rượu đó thuộc vào loại nào là lớn nhất?
+
+Một rượu có xác suất thuộc loại Barbera thì các chỉ số/biến của rượu đó thỏa mãn điều kiện gì?
+
+```{r}
+table(subset(wines, V13 >= 755 & V7 >= 2.165)$class)
+```
+
+```{r}
+
+```
+
