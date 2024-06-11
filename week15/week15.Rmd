@@ -1,0 +1,96 @@
+# Phân cụm
+
+```{r}
+cmed = read.table("./Canmed.txt", header = TRUE, row.names = 1)
+dim(cmed)
+```
+
+```{r}
+cmed
+```
+
+```{r}
+cmed = cmed[-14,]
+d = dist(scale(cmed)) # Khoảng cách Euclide giữa các tỉnh
+clust = hclust(d) # hierarchical cluster
+
+plot(cc <- clust, cex = 0.8)
+```
+
+Biểu đồ dendrogram đưa ra khoảng cách giữa các quan sát. DỰa vào khoảng cách này, chúng ta phân cụm các quan sát ban đầu.
+
+Nếu khoảng cách giữa 2 quan sát <= 4 thì ta nói 2 quan sát đó thuộc cùng 1 cụm. Dựa vào biểu đồ dendrogram, các quan sát ban đầu được chia thành bao nhiêu cụm/nhóm?
+
+```{r}
+plot(cc <- clust, cex = 0.8)
+abline(h=4, col="red")
+```
+
+
+Nhóm 1 gồm quan sát Yukon, nhóm gồm Quebec và Northwestterritories, nhóm 3 gồm ... 
+
+Nếu khoảng cách giữa 2 quan sát <= 2 thì ta nói 2 quan sát đó thuộc cùng 1 cụm. Dựa vào biểu đồ dendrogram, các quan sát ban đầu được chia thành bao nhiêu cụm/nhóm?
+
+```{r}
+plot(cc <- clust, cex = 0.8)
+abline(h=4, col="red")
+abline(h=2, col="blue")
+```
+Các quan sát được chia thành 7 nhóm.
+
+## Clustering with iris data
+
+```{r}
+head(iris)
+```
+
+```{r}
+iris = iris[1:30,]
+dim(iris)
+```
+
+```{r}
+id = dist(scale(iris[, 1:4])) # tìm khoảng cách Euclide
+fit = hclust(id) # dựng cây
+```
+
+```{r}
+library(ape)
+
+plot(as.phylo(fit), type = "phylogram", cex = 0.8, label.offset = .1, tip.col = c(rep("red", 50), rep("blue", 50), rep("green", 50)))
+    
+```
+
+
+```{r}
+plot(as.dendrogram(fit), type = "triangle", main = "Triangle branches", cex = .8, axes = FALSE)
+```
+
+```{r}
+plot(as.phylo(fit), type = "fan", cex = .8, main = "Leaves spread in a circle")
+```
+
+# Kmeans clustering
+
+```{r}
+smokers = read.table("./smokers.txt", header = TRUE)
+require(graphics, stats)
+```
+
+Phân loại theo khoảng cách giữa các điểm tới tâm của các cụm. Mỗi điểm/quan sát được xếp vào cụm mà khoảng cách giữa quan sát đó và tâm cụm là bé nhất.
+
+```{r}
+head(smokers)
+```
+
+```{r}
+cl = kmeans(smokers, centers = 4)
+cl
+```
+
+```{r}
+
+```
+
+
+

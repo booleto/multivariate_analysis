@@ -1,0 +1,238 @@
+## 10.2
+
+```{r}
+library(gap)
+library(rpart)
+```
+
+```{r}
+data = hla[, 2:8]
+names(data)
+```
+
+```{r}
+tree1 <- rpart(y ~. , data = data)
+tree1
+```
+
+```{r}
+printcp(tree1)
+```
+
+```{r}
+best1 <- tree1$cptable[which.min(tree1$cptable[, "xerror"]), "CP"]
+best1
+```
+
+```{r}
+prunned_tree <- prune(tree1, cp= best1)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree,
+    faclen = 0,
+    extra = 1,
+    roundint = F,
+    digits = 5)
+```
+
+## 10.4
+
+```{r}
+library(MASS)
+
+data(iris)
+ld <- lda(Species ~ ., data = iris)
+ld$scaling
+```
+## 10.6
+
+```{r}
+library(kernlab)
+library(rpart)
+
+data(promotergene)
+```
+
+```{r}
+tree2 <- rpart(Class ~ ., data = promotergene)
+tree2
+```
+
+```{r}
+printcp(tree2)
+```
+
+```{r}
+best2 <- tree2$cptable[which.min(tree2$cptable[, "xerror"]), "CP"]
+best2
+```
+
+```{r}
+prunned_tree2 <- prune(tree2, cp= best2)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree2,
+    faclen = 0,
+    extra = 1,
+    roundint = F,
+    digits = 5) 
+```
+
+## 10.7
+
+
+```{r}
+library(kernlab)
+library(rpart)
+```
+
+```{r}
+data(spam)
+
+tree3 <- rpart(type ~ ., data = spam)
+tree3
+```
+
+```{r}
+printcp(tree3)
+```
+```{r}
+best3 <- tree3$cptable[which.min(tree3$cptable[, "xerror"]), "CP"]
+best3
+```
+
+```{r}
+prunned_tree3 <- prune(tree3, cp= best3)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree3,
+    faclen = 0, 
+    extra = 1,
+    roundint = F,
+    digits = 5)
+```
+
+## 10.12
+
+```{r}
+library(rpart)
+data(stagec)
+```
+
+```{r}
+tree4 <- rpart(pgstat ~ ., data = stagec)
+tree4
+```
+
+```{r}
+best4 <- tree4$cptable[which.min(tree4$cptable[, "xerror"]), "CP"]
+best4
+```
+
+```{r}
+prunned_tree4 <- prune(tree4, cp= best4)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree4,
+    faclen = 0,
+    extra = 1,
+    roundint = F,
+    digits = 5) 
+```
+
+## 10.13
+
+```{r}
+library(rpart)
+data(kyphosis)
+
+tree5 <- rpart(Kyphosis ~ ., data = kyphosis)
+tree5
+```
+
+```{r}
+printcp(tree5)
+```
+
+```{r}
+best5 <- tree5$cptable[which.min(tree5$cptable[, "xerror"]), "CP"]
+best5
+```
+
+```{r}
+prunned_tree5 <- prune(tree5, cp= best5)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree5,
+    faclen = 0,
+    extra = 1,
+    roundint = F,
+    digits = 5) 
+```
+
+```{r}
+library(nnet)
+```
+
+```{r}
+kyphosis$class <- as.factor(kyphosis$Kyphosis)
+kyphosis$rClass <- relevel(kyphosis$Kyphosis, ref = 2)
+kyphosislogit <- multinom(rClass ~ ., data = kyphosis)
+```
+```{r}
+print(ws <- summary(kyphosislogit), digits = 4)
+```
+
+```{r}
+tratio <- ws$coefficients/ws$standard.errors
+print(2 * (1 - pt(abs(tratio), df = ws$edf)), digits = 4)
+```
+
+```{r}
+ws$fitted.values
+```
+
+## 10.14
+
+```{r}
+library(TH.data)
+```
+
+```{r}
+data(mammoexp)
+tree6 <- rpart(ME ~ ., data = mammoexp)
+tree6
+```
+
+```{r}
+printcp(tree6)
+```
+```{r}
+best6 <- tree6$cptable[which.min(tree6$cptable[, "xerror"]), "CP"]
+best6
+```
+
+```{r}
+prunned_tree6 <- prune(tree6, cp= best6)
+```
+
+```{r}
+library(rpart.plot)
+prp(prunned_tree6,
+    faclen = 0,
+    extra = 1, 
+    roundint = F,
+    digits = 5)
+```
+
+
